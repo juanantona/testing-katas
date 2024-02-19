@@ -12,7 +12,16 @@ Num_factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente
 // CIF and NIF are also exclusive
 // Net = gross * tax -> wrong calculations should be removed
 
-type Bill = {
+// Possible test list
+// A file with a single invoice where everything is correct, should output the same line
+// A file with a single invoice where VAT and IGIC are filled in, you should delete the line
+// A file with a single invoice where the net amount is incorrectly calculated should be deleted.
+// A file with a single invoice where CIF and NIF are filled in, you should delete the line
+// If the invoice number is repeated in several lines, all of them are deleted (without leaving any line).
+// An empty list will produce an empty output list.
+// A single line file is incorrect because it does not have a header.
+
+type Invoice = {
   Num_factura: string;
   Fecha: string;
   Bruto: number;
@@ -24,7 +33,7 @@ type Bill = {
   NIF_cliente: string;
 };
 
-type Headers =
+type InvoiceFieldName =
   | 'Num_factura'
   | 'Fecha'
   | 'Bruto'
@@ -35,22 +44,35 @@ type Headers =
   | 'CIF_cliente'
   | 'NIF_cliente';
 
+function buildFile(headerRow: string, invoiceRows: string[]): string {
+  return [headerRow, ...invoiceRows].join('\n');
+}
+
 export const csvFilter = (file: string): string => {
   const rows = file.split('\n');
-  const headerRow = rows.shift() as string;
+  const headerRow = rows[0];
 
-  const billNumbers: string[] = [];
-  const filteredRows: string[] = [];
-  for (const row of rows) {
-    const fields = row.split(',');
-    const billNumber = fields[0];
-    if (billNumbers.includes(billNumber)) {
+  const validInvoices: string[] = [];
+  for (let index = 1; index < rows.length; index++) {
+    const invoiceRow = rows[index];
+    const invoiceFields = invoiceRow.split(',').map((header) => header.trim());
+
+    const gross = Number.parseFloat(invoiceFields[2]);
+    const net = Number.parseFloat(invoiceFields[3]);
+    const ivaTax = invoiceFields[4];
+    const igicTax = invoiceFields[5];
+    const cifNumber = invoiceFields[7];
+    const nifNumber = invoiceFields[8];
+
+    const taxRuleViolation = ivaTax && igicTax;
+    const fiscalIdRuleViolation = cifNumber && nifNumber;
+    const tax = Number.parseInt(ivaTax || igicTax) / 100;
+    const netCalculationError = net !== gross * (1 - tax);
+
+    if (taxRuleViolation || fiscalIdRuleViolation || netCalculationError)
       continue;
-    } else {
-      billNumbers.push(billNumber);
-      filteredRows.push(row);
-    }
+    validInvoices.push(invoiceRow);
   }
 
-  return [headerRow].concat(filteredRows).join('\n');
+  return buildFile(headerRow, validInvoices);
 };
