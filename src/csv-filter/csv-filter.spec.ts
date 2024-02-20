@@ -52,4 +52,19 @@ describe('CSV Filter', () => {
 
     expect(result).toBe(outputFile);
   });
+
+  it('should return empty list if empty list is provided', () => {
+    const inputFile = `Num_factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente`;
+
+    const outputFile = `Num_factura, Fecha, Bruto, Neto, IVA, IGIC, Concepto, CIF_cliente, NIF_cliente`;
+    const result = csvFilter(inputFile);
+
+    expect(result).toBe(outputFile);
+  });
+
+  it('should throw an error when a single line is provided', () => {
+    const inputFile = `N1,02/05/2019,1000,810,19,,ACERLaptop,B76430134,`;
+
+    expect(() => csvFilter(inputFile)).toThrow('error');
+  });
 });

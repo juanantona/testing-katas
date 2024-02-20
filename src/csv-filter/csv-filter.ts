@@ -44,6 +44,23 @@ type InvoiceFieldName =
   | 'CIF_cliente'
   | 'NIF_cliente';
 
+function getInvoice(fieldNames: string[], invoiceFields: string[]) {
+  const fieldsTypeNumber = ['Neto', 'Bruto', 'IVA', 'IGIC'];
+
+  const invoice = {};
+  fieldNames.forEach((fieldName, index) => {
+    const value = invoiceFields[index];
+    invoice[fieldName] = fieldsTypeNumber.includes(fieldName)
+      ? Number.parseInt(value)
+      : value;
+  });
+  return invoice;
+}
+
+function splitRow(row: string) {
+  return row.split(',').map((field) => field.trim());
+}
+
 function buildFile(headerRow: string, invoiceRows: string[]): string {
   return [headerRow, ...invoiceRows].join('\n');
 }
@@ -51,25 +68,45 @@ function buildFile(headerRow: string, invoiceRows: string[]): string {
 export const csvFilter = (file: string): string => {
   const rows = file.split('\n');
   const headerRow = rows[0];
+  const fieldNames = splitRow(headerRow);
+
+  if (rows.length === 1 && !headerRow.includes('Num_factura'))
+    throw new Error('error');
 
   const validInvoices: string[] = [];
   for (let index = 1; index < rows.length; index++) {
     const invoiceRow = rows[index];
-    const invoiceFields = invoiceRow.split(',').map((header) => header.trim());
+    const invoiceFields = splitRow(invoiceRow);
 
-    const gross = Number.parseFloat(invoiceFields[2]);
-    const net = Number.parseFloat(invoiceFields[3]);
-    const ivaTax = invoiceFields[4];
-    const igicTax = invoiceFields[5];
-    const cifNumber = invoiceFields[7];
-    const nifNumber = invoiceFields[8];
+    const invoice = getInvoice(fieldNames, invoiceFields);
 
-    const taxRuleViolation = ivaTax && igicTax;
-    const fiscalIdRuleViolation = cifNumber && nifNumber;
-    const tax = Number.parseInt(ivaTax || igicTax) / 100;
+    const gross = invoice['Bruto'];
+    const net = invoice['Neto'];
+    const ivaTax = invoice['IVA'];
+    const igicTax = invoice['IGIC'];
+    const cifNumber = invoice['CIF_cliente'];
+    const nifNumber = invoice['NIF_cliente'];
+
+    const taxRuleViolation = Boolean(ivaTax) && Boolean(igicTax);
+    const fiscalIdRuleViolation = Boolean(cifNumber) && Boolean(nifNumber);
+    const tax = (ivaTax || igicTax) / 100;
     const netCalculationError = net !== gross * (1 - tax);
 
-    if (taxRuleViolation || fiscalIdRuleViolation || netCalculationError)
+    const id = invoice['Num_factura'];
+    let idRuleViolation = false;
+    for (let innerIndex = 1; innerIndex < rows.length; innerIndex++) {
+      const innerInvoiceFields = splitRow(rows[innerIndex]);
+      const innerInvoice = getInvoice(fieldNames, innerInvoiceFields);
+      if (id === innerInvoice['Num_factura'] && index !== innerIndex)
+        idRuleViolation = true;
+    }
+
+    if (
+      taxRuleViolation ||
+      fiscalIdRuleViolation ||
+      netCalculationError ||
+      idRuleViolation
+    )
       continue;
     validInvoices.push(invoiceRow);
   }
