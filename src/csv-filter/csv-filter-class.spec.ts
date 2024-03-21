@@ -41,7 +41,7 @@ ${oneInvoice()}`;
 
   it('should return delete invoice if there is just one line and net is wrongly calculated', () => {
     const inputFile = `${headers}
-1,02/05/2019,1000,800,19,,ACERLaptop,B76430134,`;
+  ${oneInvoice('19', emptyField, '800')}`;
 
     const outputFile = `${headers}`;
     const filter = new csvFilter(inputFile);
@@ -79,11 +79,14 @@ ${oneInvoice()}`;
     expect(() => filter.filteredInvoices).toThrow('error');
   });
 
-  const oneInvoice = (iva: string = '19', igic: string = emptyField) => {
+  const oneInvoice = (
+    iva: string = '19',
+    igic: string = emptyField,
+    net: string = '810'
+  ) => {
     const id = '1';
     const date = '02/05/2019';
     const gross = '1000';
-    const net = '810';
     const concept = 'ACERLaptop';
     const cif = 'B76430134';
     const nif = emptyField;

@@ -15,16 +15,19 @@ export class csvFilter {
     const validInvoices: string[] = [];
     for (const invoice of invoices) {
       const invoiceFields = invoice.split(',').map((field) => field.trim());
-      const ivaTax = parseInt(invoiceFields[4]);
-      const igicTax = parseInt(invoiceFields[5]);
+      const ivaTax = invoiceFields[4];
+      const igicTax = invoiceFields[5];
       const cifNumber = invoiceFields[7];
       const nifNumber = invoiceFields[8];
-      const gross = parseInt(invoiceFields[2]);
-      const net = parseInt(invoiceFields[3]);
+      const gross = invoiceFields[2];
+      const net = invoiceFields[3];
 
       const fiscalIdRuleViolation = Boolean(cifNumber) && Boolean(nifNumber);
-      const netCalculationError =
-        net !== this.calculateNet(gross, ivaTax || igicTax);
+      const netCalculationError = !this.checkIfNetAmountIsCorrect(
+        net,
+        gross,
+        ivaTax || igicTax
+      );
 
       const id = invoiceFields[0];
       const sameIdInvoices = invoices.filter((invoice) => {
@@ -45,8 +48,11 @@ export class csvFilter {
     return [headers, ...validInvoices].join('\n');
   }
 
-  private calculateNet(gross: number, tax: number) {
-    return gross * (1 - tax / 100);
+  private checkIfNetAmountIsCorrect(net: string, gross: string, tax: string) {
+    const parsedNet = parseInt(net);
+    const parsedGross = parseInt(gross);
+    const parsedTax = parseInt(tax);
+    return parsedNet === parsedGross * (1 - parsedTax / 100);
   }
 
   private isTaxRuleViolation(invoiceFields: string[]) {
