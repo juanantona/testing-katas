@@ -12,39 +12,7 @@ export class csvFilter {
     const headers = rows[0];
     const invoices = rows.slice(1);
 
-    const validInvoices: string[] = [];
-    for (const invoice of invoices) {
-      const invoiceFields = invoice.split(',').map((field) => field.trim());
-      const ivaTax = invoiceFields[4];
-      const igicTax = invoiceFields[5];
-      const cifNumber = invoiceFields[7];
-      const nifNumber = invoiceFields[8];
-      const gross = invoiceFields[2];
-      const net = invoiceFields[3];
-
-      const fiscalIdRuleViolation = Boolean(cifNumber) && Boolean(nifNumber);
-      const netCalculationError = !this.checkIfNetAmountIsCorrect(
-        net,
-        gross,
-        ivaTax || igicTax
-      );
-
-      const id = invoiceFields[0];
-      const sameIdInvoices = invoices.filter((invoice) => {
-        const invoiceId = invoice.split(',')[0].trim();
-        return invoiceId === id;
-      });
-      const idDuplicated = sameIdInvoices.length > 1;
-
-      const anyError =
-        this.isTaxRuleViolation(invoiceFields) ||
-        fiscalIdRuleViolation ||
-        netCalculationError ||
-        idDuplicated;
-
-      if (anyError) continue;
-      else validInvoices.push(invoice);
-    }
+    const validInvoices = invoices.filter(this.isValidInvoice);
     return [headers, ...validInvoices].join('\n');
   }
 
@@ -55,9 +23,31 @@ export class csvFilter {
     return parsedNet === parsedGross * (1 - parsedTax / 100);
   }
 
-  private isTaxRuleViolation(invoiceFields: string[]) {
-    const ivaTax = parseInt(invoiceFields[4]);
-    const igicTax = parseInt(invoiceFields[5]);
+  private isTaxRuleViolation(fields: string[]) {
+    const ivaTax = fields[4];
+    const igicTax = fields[5];
     return Boolean(ivaTax) && Boolean(igicTax);
   }
+
+  private isValidInvoice = (invoice: string) => {
+    const fields = invoice.split(',').map((field) => field.trim());
+    const ivaTax = fields[4];
+    const igicTax = fields[5];
+    const cifNumber = fields[7];
+    const nifNumber = fields[8];
+    const gross = fields[2];
+    const net = fields[3];
+
+    const isTaxRuleViolation = this.isTaxRuleViolation(fields);
+    const fiscalIdRuleViolation = Boolean(cifNumber) && Boolean(nifNumber);
+    const netCalculationError = !this.checkIfNetAmountIsCorrect(
+      net,
+      gross,
+      ivaTax || igicTax
+    );
+
+    const anyError =
+      isTaxRuleViolation || fiscalIdRuleViolation || netCalculationError;
+    return !anyError;
+  };
 }
