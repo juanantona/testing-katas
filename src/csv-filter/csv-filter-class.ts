@@ -12,7 +12,10 @@ export class csvFilter {
     const headers = rows[0];
     const invoices = rows.slice(1);
 
-    const validInvoices = invoices.filter(this.isValidInvoice);
+    const validInvoices = invoices
+      .filter(this.isValidInvoice)
+      .filter(this.isUniqueIdInvoice);
+
     return [headers, ...validInvoices].join('\n');
   }
 
@@ -49,5 +52,16 @@ export class csvFilter {
     const anyError =
       isTaxRuleViolation || fiscalIdRuleViolation || netCalculationError;
     return !anyError;
+  };
+
+  private isUniqueIdInvoice = (
+    invoice: string,
+    index: number,
+    allInvoices: string[]
+  ) => {
+    const getId = (invoice: string) => invoice.split(',')[0].trim();
+    const allInvoiceIds = allInvoices.map(getId);
+    const repitedIds = allInvoiceIds.filter((id) => id === getId(invoice));
+    return repitedIds.length === 1;
   };
 }

@@ -17,6 +17,18 @@ describe('CSV Filter', () => {
     expect(result).toBe(outputFile);
   });
 
+  it('should return valid invoices if all the conditions are ok', () => {
+    const invoiceLine1 = oneInvoice({ id: '1' });
+    const invoiceLine2 = oneInvoice({ id: '2' });
+    const inputFile = csvFile([headers, invoiceLine1, invoiceLine2]);
+    const outputFile = csvFile([headers, invoiceLine1, invoiceLine2]);
+
+    const filter = csvFilter.create(inputFile);
+    const result = filter.filteredInvoices;
+
+    expect(result).toBe(outputFile);
+  });
+
   it('should return delete invoice if there is just one line and VAT an IGIC are filled in', () => {
     const invoiceLine = oneInvoice({ iva: '19', igic: '15' });
     const inputFile = csvFile([headers, invoiceLine]);
@@ -50,18 +62,6 @@ describe('CSV Filter', () => {
     expect(result).toBe(outputFile);
   });
 
-  it('should return delete both invoices if there is 2 with the same number', () => {
-    const inputFile = `${headers}
-1,02/05/2019,1000,810,19,,ACERLaptop,B76430134,
-1,02/05/2019,1000,810,19,,ACERLaptop,B76430134,`;
-
-    const outputFile = `${headers}`;
-    const filter = new csvFilter(inputFile);
-    const result = filter.filteredInvoices;
-
-    expect(result).toBe(outputFile);
-  });
-
   it('should return empty list if empty list is provided', () => {
     const inputFile = csvFile([headers, '']);
     const outputFile = csvFile([headers]);
@@ -78,6 +78,26 @@ describe('CSV Filter', () => {
     const filter = new csvFilter(inputFile);
 
     expect(() => filter.filteredInvoices).toThrow('error');
+  });
+
+  it('should return delete both invoices if there is 2 with the same id', () => {
+    const invoiceLine1 = oneInvoice({ id: '1' });
+    const invoiceLine2 = oneInvoice({ id: '2' });
+    const invoiceLine3 = oneInvoice({ id: '3' });
+    const invoiceLine4 = oneInvoice({ id: '3' });
+    const inputFile = csvFile([
+      headers,
+      invoiceLine1,
+      invoiceLine2,
+      invoiceLine3,
+      invoiceLine4,
+    ]);
+    const outputFile = csvFile([headers, invoiceLine1, invoiceLine2]);
+
+    const filter = new csvFilter(inputFile);
+    const result = filter.filteredInvoices;
+
+    expect(result).toBe(outputFile);
   });
 
   interface Invoice {
