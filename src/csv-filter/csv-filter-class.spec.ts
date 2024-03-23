@@ -34,7 +34,7 @@ describe('CSV Filter', () => {
     const inputFile = csvFile([headers, invoiceLine]);
     const outputFile = csvFile([headers]);
 
-    const filter = new csvFilter(inputFile);
+    const filter = csvFilter.create(inputFile);
     const result = filter.filteredInvoices;
 
     expect(result).toBe(outputFile);
@@ -45,7 +45,7 @@ describe('CSV Filter', () => {
     const inputFile = csvFile([headers, invoiceLine]);
     const outputFile = csvFile([headers]);
 
-    const filter = new csvFilter(inputFile);
+    const filter = csvFilter.create(inputFile);
     const result = filter.filteredInvoices;
 
     expect(result).toBe(outputFile);
@@ -56,7 +56,7 @@ describe('CSV Filter', () => {
     const inputFile = csvFile([headers, invoiceLine]);
     const outputFile = csvFile([headers]);
 
-    const filter = new csvFilter(inputFile);
+    const filter = csvFilter.create(inputFile);
     const result = filter.filteredInvoices;
 
     expect(result).toBe(outputFile);
@@ -66,7 +66,7 @@ describe('CSV Filter', () => {
     const inputFile = csvFile([headers, '']);
     const outputFile = csvFile([headers]);
 
-    const filter = new csvFilter(inputFile);
+    const filter = csvFilter.create(inputFile);
     const result = filter.filteredInvoices;
 
     expect(result).toBe(outputFile);
@@ -75,9 +75,9 @@ describe('CSV Filter', () => {
   it('should throw an error when a single line is provided', () => {
     const inputFile = csvFile([headers]);
 
-    const filter = new csvFilter(inputFile);
-
-    expect(() => filter.filteredInvoices).toThrow('error');
+    expect(() => csvFilter.create(inputFile)).toThrow(
+      'Single line is not allowed'
+    );
   });
 
   it('should return delete both invoices if there is 2 with the same id', () => {
@@ -94,7 +94,7 @@ describe('CSV Filter', () => {
     ]);
     const outputFile = csvFile([headers, invoiceLine1, invoiceLine2]);
 
-    const filter = new csvFilter(inputFile);
+    const filter = csvFilter.create(inputFile);
     const result = filter.filteredInvoices;
 
     expect(result).toBe(outputFile);

@@ -2,13 +2,13 @@ export class csvFilter {
   constructor(private readonly file: string) {}
 
   static create(file: string) {
+    const rows = file.split('\n');
+    if (rows.length === 1) throw new Error('Single line is not allowed');
     return new csvFilter(file);
   }
 
   get filteredInvoices() {
     const rows = this.file.split('\n');
-    if (rows.length === 1) throw new Error('error');
-
     const headers = rows[0];
     const invoices = rows.slice(1);
 
