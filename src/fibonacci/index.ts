@@ -1,18 +1,16 @@
 export class Fibonacci {
   constructor() {}
 
-  getSerie(numberOfItems: number) {
+  getElement(element: number) {
     let serie = [0];
-
-    for (let index = 1; index <= numberOfItems; index++) {
-      if (index === 1) continue;
-      if (index === 2) {
+    for (let index = 0; index < element; index++) {
+      if (index === 0) continue;
+      if (index === 1) {
         serie.push(1);
         continue;
       }
-      const nextValue = serie[index - 3] + serie[index - 2];
-      serie.push(nextValue);
+      serie.push(serie[index - 2] + serie[index - 1]);
     }
-    return serie;
+    return serie[element - 1];
   }
 }
