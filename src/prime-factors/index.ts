@@ -1,9 +1,8 @@
 export const getPrimeFactorsFor = (number: number) => {
-  let factor = 2;
-  if (number % factor !== 0) factor = 3;
-  if (number % factor !== 0) factor = 5;
-  if (number % factor !== 0) factor = 7;
-  if (number % factor !== 0) factor = 11;
+  const primes = [3, 5, 7, 11];
+  const factor = primes.reduce((previousFactor, currentfactor) => {
+    return number % previousFactor === 0 ? previousFactor : currentfactor;
+  }, 2);
   const factors = [factor];
   const reminder = number / factor;
   if (reminder > 1) {
