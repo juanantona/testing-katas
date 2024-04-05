@@ -19,5 +19,10 @@ describe('Word Wrap', () => {
     expect(wordWrap('abc def', 4)).toBe('abc\ndef');
     expect(wordWrap('abc def ghi', 4)).toBe('abc\ndef\nghi');
     expect(wordWrap(' abcdf', 4)).toBe('\nabcd\nf');
+    expect(wordWrap(null, 5)).toBe('');
+    expect(wordWrap(undefined, 5)).toBe('');
+    expect(() => wordWrap('hello', -5)).toThrow(
+      'Negative column sizes are not allowed'
+    );
   });
 });
