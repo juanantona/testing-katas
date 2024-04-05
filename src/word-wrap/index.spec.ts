@@ -1,26 +1,28 @@
 import { wordWrap } from '.';
 
-// wordWrap('',5) ⇒ ''
-// wordWrap('hello',5) ⇒ 'hello'
-// wordWrap('longword',4) ⇒ 'long\nword'
-// wordWrap('reallylongword',4) ⇒ 'real\nlylo\nngwo\nrd'
-// wordWrap('abc def',4) ⇒ 'abc\ndef'
-// wordWrap('abc def ghi',4) ⇒ 'abc\ndef\nghi'
-// wordWrap(' abcdf',4) ⇒ '\nabcd\nf'
-// wordWrap(null,5) ⇒ ''
-// wordWrap('hello',-5) ⇒ throw exception
-
 describe('Word Wrap', () => {
-  it('Should return the text splitted with break lines', async () => {
+  it('Should return an empty string when empty string or null or undefined is provided', async () => {
     expect(wordWrap('', 5)).toBe('');
+    expect(wordWrap(null, 5)).toBe('');
+    expect(wordWrap(undefined, 5)).toBe('');
+  });
+
+  it('Should return the provided text if column size is smaller that its length', async () => {
     expect(wordWrap('hello', 5)).toBe('hello');
+  });
+
+  it('Should wrap the text when its length is greater than column size', async () => {
     expect(wordWrap('longword', 4)).toBe('long\nword');
     expect(wordWrap('reallylongword', 4)).toBe('real\nlylo\nngwo\nrd');
+  });
+
+  it('Should prevail blank spaces', async () => {
     expect(wordWrap('abc def', 4)).toBe('abc\ndef');
     expect(wordWrap('abc def ghi', 4)).toBe('abc\ndef\nghi');
     expect(wordWrap(' abcdf', 4)).toBe('\nabcd\nf');
-    expect(wordWrap(null, 5)).toBe('');
-    expect(wordWrap(undefined, 5)).toBe('');
+  });
+
+  it("Shouldn't allow negative column sizes", async () => {
     expect(() => wordWrap('hello', -5)).toThrow(
       'Negative column sizes are not allowed'
     );
