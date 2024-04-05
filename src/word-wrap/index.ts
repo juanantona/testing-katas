@@ -1,15 +1,19 @@
 export const wordWrap = (text: string, columnSize: number): string => {
-  if (text.length > columnSize) {
-    let column: string, rest: string;
-    const firstWhiteSpaceIndex = text.indexOf(' ');
-    if (firstWhiteSpaceIndex > -1 && firstWhiteSpaceIndex < columnSize) {
-      column = text.slice(0, firstWhiteSpaceIndex);
-      rest = text.slice(firstWhiteSpaceIndex + 1);
-    } else {
-      column = text.slice(0, columnSize);
-      rest = text.slice(columnSize);
-    }
-    return [column, wordWrap(rest, columnSize)].join('\n');
-  }
-  return text;
+  if (text.length <= columnSize) return text;
+
+  const { wrappedIndex, unwrappedIndex } = getSplitIndexes(text, columnSize);
+  const wrappedText = text.slice(0, wrappedIndex);
+  const unwrappedText = text.slice(unwrappedIndex);
+  return [wrappedText, wordWrap(unwrappedText, columnSize)].join('\n');
+};
+const getSplitIndexes = (text: string, columnSize: number) => {
+  const whiteSpaceIndex = text.indexOf(' ');
+  const shouldWrapByWhiteSpace =
+    whiteSpaceIndex > -1 && whiteSpaceIndex < columnSize;
+
+  const wrappedIndex = shouldWrapByWhiteSpace ? whiteSpaceIndex : columnSize;
+  const unwrappedIndex = shouldWrapByWhiteSpace
+    ? whiteSpaceIndex + 1
+    : columnSize;
+  return { wrappedIndex, unwrappedIndex };
 };
