@@ -3,5 +3,5 @@ export type ColumnSize = {
 };
 
 export type WrappableText = {
-  value: string;
+  text: string;
 };

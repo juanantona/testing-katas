@@ -3,20 +3,28 @@ import { ColumnSize, WrappableText } from '../types';
 export function from(text: string | null | undefined): WrappableText {
   if (text == null) return from('');
 
-  return { value: text };
+  return { text };
 }
 
-export function fitsIn(text: WrappableText, columnSize: ColumnSize) {
-  return text.value.length <= columnSize.value;
+export function wordWrap(text: WrappableText, columnSize: ColumnSize) {
+  if (fitsIn(text, columnSize)) return text;
+
+  const wrappedText = wrapText(text, columnSize);
+  const unwrappedText = unWrapText(text, columnSize);
+  return concat(wrappedText, wordWrap(unwrappedText, columnSize));
 }
 
-export function concat(text1: WrappableText, text2: WrappableText) {
-  return from([text1.value, text2.value].join('\n'));
+function fitsIn(text: WrappableText, columnSize: ColumnSize) {
+  return text.text.length <= columnSize.value;
 }
 
-export function wrapText(text: WrappableText, columnSize: ColumnSize) {
+function concat(text1: WrappableText, text2: WrappableText) {
+  return from([text1.text, text2.text].join('\n'));
+}
+
+function wrapText(text: WrappableText, columnSize: ColumnSize) {
   const wrappedIndex = wrapIndex(text, columnSize);
-  return from(text.value.slice(0, wrappedIndex));
+  return from(text.text.slice(0, wrappedIndex));
 }
 
 function wrapIndex(text: WrappableText, columnSize: ColumnSize) {
@@ -25,9 +33,9 @@ function wrapIndex(text: WrappableText, columnSize: ColumnSize) {
   return shouldWrap ? whiteSpaceIndex : columnSize.value;
 }
 
-export function unWrapText(text: WrappableText, columnSize: ColumnSize) {
+function unWrapText(text: WrappableText, columnSize: ColumnSize) {
   const unWrappedIndex = unWrapIndex(text, columnSize);
-  return from(text.value.slice(unWrappedIndex));
+  return from(text.text.slice(unWrappedIndex));
 }
 
 function unWrapIndex(text: WrappableText, columnSize: ColumnSize) {
@@ -42,5 +50,5 @@ function shouldWrapByWhiteSpace(text: WrappableText, columnSize: ColumnSize) {
 }
 
 function indexOfWhiteSpace(text: WrappableText) {
-  return text.value.indexOf(' ');
+  return text.text.indexOf(' ');
 }
