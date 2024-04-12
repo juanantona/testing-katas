@@ -34,16 +34,23 @@ export const wordWrap = (
   return wordWrapNonPrimitives(
     WrappableText.from(text),
     ColumnSize.from(columnSize)
-  );
+  ).value;
 };
 
+type WrappableText = ReturnType<typeof WrappableText.from>;
+type ColumnSize = ReturnType<typeof ColumnSize.from>;
+
 export const wordWrapNonPrimitives = (
-  text: ReturnType<typeof WrappableText.from>,
-  columnSize: ReturnType<typeof ColumnSize.from>
-): string => {
-  if (WrappableText.fitsIn(text, columnSize)) return text.value;
+  text: WrappableText,
+  columnSize: ColumnSize
+): WrappableText => {
+  if (WrappableText.fitsIn(text, columnSize)) return text;
 
   const wrappedText = WrappableText.wrapText(text, columnSize);
   const unwrappedText = WrappableText.unWrapText(text, columnSize);
-  return [wrappedText, wordWrap(unwrappedText, columnSize.value)].join('\n');
+
+  return WrappableText.concat(
+    wrappedText,
+    wordWrapNonPrimitives(unwrappedText, columnSize)
+  );
 };
