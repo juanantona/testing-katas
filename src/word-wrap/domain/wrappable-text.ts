@@ -10,18 +10,33 @@ export function fitsIn(text: WrappableText, columnSize: ColumnSize) {
   return text.value.length <= columnSize.value;
 }
 
-export function wrapIndex(text: WrappableText, columnSize: ColumnSize) {
-  const whiteSpaceIndex = text.value.indexOf(' ');
-  const shouldWrapByWhiteSpace =
-    whiteSpaceIndex > -1 && whiteSpaceIndex < columnSize.value;
-
-  return shouldWrapByWhiteSpace ? whiteSpaceIndex : columnSize.value;
+export function wrapText(text: WrappableText, columnSize: ColumnSize) {
+  const wrappedIndex = wrapIndex(text, columnSize);
+  return text.value.slice(0, wrappedIndex);
 }
 
-export function unWrapIndex(text: WrappableText, columnSize: ColumnSize) {
-  const whiteSpaceIndex = text.value.indexOf(' ');
-  const shouldWrapByWhiteSpace =
-    whiteSpaceIndex > -1 && whiteSpaceIndex < columnSize.value;
+export function unWrapText(text: WrappableText, columnSize: ColumnSize) {
+  const unWrappedIndex = unWrapIndex(text, columnSize);
+  return text.value.slice(unWrappedIndex);
+}
 
-  return shouldWrapByWhiteSpace ? whiteSpaceIndex + 1 : columnSize.value;
+function indexOfWhiteSpace(text: WrappableText) {
+  return text.value.indexOf(' ');
+}
+
+function shouldWrapByWhiteSpace(text: WrappableText, columnSize: ColumnSize) {
+  const whiteSpaceIndex = indexOfWhiteSpace(text);
+  return whiteSpaceIndex > -1 && whiteSpaceIndex < columnSize.value;
+}
+
+function wrapIndex(text: WrappableText, columnSize: ColumnSize) {
+  const whiteSpaceIndex = indexOfWhiteSpace(text);
+  const shouldWrap = shouldWrapByWhiteSpace(text, columnSize);
+  return shouldWrap ? whiteSpaceIndex : columnSize.value;
+}
+
+function unWrapIndex(text: WrappableText, columnSize: ColumnSize) {
+  const whiteSpaceIndex = indexOfWhiteSpace(text);
+  const shouldWrap = shouldWrapByWhiteSpace(text, columnSize);
+  return shouldWrap ? whiteSpaceIndex + 1 : columnSize.value;
 }

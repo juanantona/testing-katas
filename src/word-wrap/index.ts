@@ -43,10 +43,7 @@ export const wordWrapNonPrimitives = (
 ): string => {
   if (WrappableText.fitsIn(text, columnSize)) return text.value;
 
-  const wrappedIndex = WrappableText.wrapIndex(text, columnSize);
-  const unWrappedIndex = WrappableText.unWrapIndex(text, columnSize);
-
-  const wrappedText = text.value.slice(0, wrappedIndex);
-  const unwrappedText = text.value.slice(unWrappedIndex);
+  const wrappedText = WrappableText.wrapText(text, columnSize);
+  const unwrappedText = WrappableText.unWrapText(text, columnSize);
   return [wrappedText, wordWrap(unwrappedText, columnSize.value)].join('\n');
 };
