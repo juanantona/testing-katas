@@ -1,4 +1,4 @@
-import { ColumnSize, WrappableText } from '../types';
+import { ColumnSize, WrappableText } from './types';
 
 export function from(text: string | null | undefined): WrappableText {
   if (text == null) return from('');

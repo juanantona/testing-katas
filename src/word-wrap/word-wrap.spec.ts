@@ -1,4 +1,4 @@
-import { wordWrap } from '.';
+import { wordWrap } from './word-wrap';
 
 describe('Word Wrap', () => {
   it('Should return an empty string when empty string or null or undefined is provided', async () => {
