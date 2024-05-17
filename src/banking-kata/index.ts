@@ -9,13 +9,20 @@ export class Account {
   constructor() {
     this.records = [];
   }
-  deposit(amount: number): void {
-    const lastRecord = this.records.slice(-1).shift();
 
+  getLastRecord(): Record | undefined {
+    return this.records.slice(-1).shift();
+  }
+
+  getTotalAmount(): number {
+    return this.getLastRecord()?.total | 0;
+  }
+
+  deposit(amount: number): void {
     const record = {
       date: new Date().toISOString(),
       amount,
-      total: (lastRecord?.total | 0) + amount,
+      total: this.getTotalAmount() + amount,
     };
     this.records.push(record);
   }

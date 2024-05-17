@@ -11,10 +11,12 @@ describe('#Banking', () => {
     const account = new Account();
     account.deposit(1000);
 
-    expect(account.records.slice(-1).shift()).toStrictEqual({
+    expect(account.getLastRecord()).toStrictEqual({
       date: '2024-01-01T00:00:00.000Z',
       amount: 1000,
       total: 1000,
     });
+
+    expect(account.getTotalAmount()).toBe(1000);
   });
 });
