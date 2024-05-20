@@ -1,41 +1,65 @@
-type Transactions = {
+type Transaction = {
   date: string;
   amount: number;
   total: number;
 };
 
-export class Account {
-  transactions: Transactions[];
+export class Console {
+  constructor() {}
+
+  log(message: string) {
+    console.log(message);
+  }
+}
+
+type TypeRepository = {
+  addDeposit: (amount: number) => void;
+  addWithdraw: (amount: number) => void;
+};
+
+export class Repository {
+  transactions: Transaction[];
   constructor() {
     this.transactions = [];
   }
 
-  get lastTransaction(): Transactions | undefined {
-    return this.transactions.slice(-1).shift();
+  addDeposit(amount: number) {
+    this.transactions.push({
+      date: new Date().toISOString(),
+      amount,
+      total: this.total + amount,
+    });
   }
 
-  get totalAmount(): number {
-    const lastTransactions = this.lastTransaction;
-    return lastTransactions ? lastTransactions.total : 0;
+  addWithdraw(amount: number) {
+    this.transactions.push({
+      date: new Date().toISOString(),
+      amount: -amount,
+      total: this.total - amount,
+    });
+  }
+
+  get total() {
+    return this.transactions
+      .map((transaction) => transaction.amount)
+      .reduce((acc, amount) => acc + amount, 0);
+  }
+}
+
+export class Account {
+  repository: TypeRepository;
+  constructor(repository: TypeRepository) {
+    this.repository = repository;
   }
 
   deposit(amount: number): void {
-    const record = {
-      date: new Date().toISOString(),
-      amount,
-      total: this.totalAmount + amount,
-    };
-    this.transactions.push(record);
+    this.repository.addDeposit(amount);
   }
 
   withdraw(amount: number): void {
-    const record = {
-      date: new Date().toISOString(),
-      amount: -amount,
-      total: this.totalAmount - amount,
-    };
-    this.transactions.push(record);
+    this.repository.addWithdraw(amount);
   }
+
   printStatement(): void {
     console.log('Date | Amount | Balance');
   }

@@ -1,4 +1,4 @@
-import { Account } from './account';
+import { Account, Repository } from './account';
 
 // Requisites
 // Make a deposit into the account
@@ -6,43 +6,30 @@ import { Account } from './account';
 // Print banking movements
 
 describe('#Banking', () => {
-  it('Should make a deposit', async () => {
-    jest.useFakeTimers().setSystemTime(new Date('2024-01-01'));
-    const account = new Account();
+  const repository = new Repository();
+  const addDepositSpy = jest.spyOn(repository, 'addDeposit');
+  const addWithdrawtSpy = jest.spyOn(repository, 'addWithdraw');
+
+  it('Should store a transaction throught the repository', async () => {
+    const account = new Account(repository);
     account.deposit(1000);
 
-    expect(account.lastTransaction).toStrictEqual({
-      date: '2024-01-01T00:00:00.000Z',
-      amount: 1000,
-      total: 1000,
-    });
-
-    expect(account.totalAmount).toBe(1000);
+    expect(addDepositSpy).toHaveBeenCalledWith(1000);
+    expect(repository.total).toBe(1000);
   });
 
-  it('Should make a withdraw', async () => {
-    jest.useFakeTimers().setSystemTime(new Date('2024-01-01'));
+  it('Should store a withdrawal thouught the repository', async () => {
+    const account = new Account(repository);
+    account.withdraw(1000);
 
-    const account = new Account();
-    account.deposit(1000);
-    account.withdraw(500);
-
-    expect(account.lastTransaction).toStrictEqual({
-      date: '2024-01-01T00:00:00.000Z',
-      amount: -500,
-      total: 500,
-    });
-
-    expect(account.totalAmount).toBe(500);
+    expect(addWithdrawtSpy).toHaveBeenCalledWith(1000);
+    expect(repository.total).toBe(0);
   });
 
   it('Should print transactions', async () => {
-    const account = new Account();
-    jest.useFakeTimers().setSystemTime(new Date('2022-10-01'));
+    const account = new Account(repository);
     account.deposit(1000);
-    jest.useFakeTimers().setSystemTime(new Date('2022-10-13'));
     account.withdraw(500);
-    jest.useFakeTimers().setSystemTime(new Date('2022-10-14'));
     account.deposit(2000);
     account.printStatement();
 
