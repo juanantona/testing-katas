@@ -8,10 +8,28 @@ export class Console {
   }
 }
 
+export class StatementPrinter {
+  console: Console;
+  constructor(console: Console) {
+    this.console = console;
+  }
+
+  print(transactions: Transaction[]) {
+    this.console.log('Date | Amount | Balance');
+    transactions.reverse().forEach((transaction) => {
+      const { date, amount, total } = transaction;
+      const formattedDate = new Date(date).toLocaleDateString('en-GB');
+      return this.console.log(`${formattedDate} | ${amount} | ${total}`);
+    });
+  }
+}
+
 export class Account {
-  repository: TypeRepository;
-  constructor(repository: TypeRepository) {
+  repository: Repository;
+  statementPrinter: StatementPrinter;
+  constructor(repository: Repository, statementPrinter: StatementPrinter) {
     this.repository = repository;
+    this.statementPrinter = statementPrinter;
   }
 
   deposit(amount: number): void {
@@ -23,6 +41,6 @@ export class Account {
   }
 
   printStatement(): void {
-    console.log('Date | Amount | Balance');
+    this.statementPrinter.print(this.repository.allTransactions());
   }
 }
