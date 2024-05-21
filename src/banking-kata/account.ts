@@ -1,48 +1,10 @@
-type Transaction = {
-  date: string;
-  amount: number;
-  total: number;
-};
+import { type Transaction, Repository } from './repository';
 
 export class Console {
   constructor() {}
 
   log(message: string) {
     console.log(message);
-  }
-}
-
-type TypeRepository = {
-  addDeposit: (amount: number) => void;
-  addWithdraw: (amount: number) => void;
-};
-
-export class Repository {
-  transactions: Transaction[];
-  constructor() {
-    this.transactions = [];
-  }
-
-  addDeposit(amount: number) {
-    this.transactions.push({
-      date: new Date().toISOString(),
-      amount,
-      total: this.total + amount,
-    });
-  }
-
-  addWithdraw(amount: number) {
-    this.transactions.push({
-      date: new Date().toISOString(),
-      amount: -amount,
-      total: this.total - amount,
-    });
-  }
-
-  get total() {
-    return this.transactions
-      .map((transaction) => transaction.amount)
-      .reduce((acc, amount) => acc + amount, 0);
   }
 }
 
