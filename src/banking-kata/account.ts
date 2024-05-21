@@ -1,28 +1,5 @@
-import { type Transaction, Repository } from './repository';
-
-export class Console {
-  constructor() {}
-
-  log(message: string) {
-    console.log(message);
-  }
-}
-
-export class StatementPrinter {
-  console: Console;
-  constructor(console: Console) {
-    this.console = console;
-  }
-
-  print(transactions: Transaction[]) {
-    this.console.log('Date | Amount | Balance');
-    transactions.reverse().forEach((transaction) => {
-      const { date, amount, total } = transaction;
-      const formattedDate = new Date(date).toLocaleDateString('en-GB');
-      return this.console.log(`${formattedDate} | ${amount} | ${total}`);
-    });
-  }
-}
+import { StatementPrinter } from './statement-printer';
+import { Repository } from './repository';
 
 export class Account {
   repository: Repository;

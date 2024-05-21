@@ -1,4 +1,5 @@
-import { Account, StatementPrinter, Console } from './account';
+import { Account } from './account';
+import { StatementPrinter, Console } from './statement-printer';
 import { Repository } from './repository';
 
 // Requisites
