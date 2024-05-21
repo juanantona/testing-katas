@@ -5,10 +5,8 @@ export type Transaction = {
 };
 
 export class Repository {
-  transactions: Transaction[];
-  constructor() {
-    this.transactions = [];
-  }
+  private transactions: Transaction[] = [];
+  constructor() {}
 
   addDeposit(amount: number) {
     this.transactions.push({
@@ -28,7 +26,7 @@ export class Repository {
 
   get total() {
     return this.transactions
-      .map((transaction) => transaction.amount)
+      .map(({ amount }) => amount)
       .reduce((acc, amount) => acc + amount, 0);
   }
 
