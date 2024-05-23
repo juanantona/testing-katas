@@ -17,10 +17,12 @@ export class StatementPrinter {
 
   print(transactions: Transaction[]) {
     this.console.log(this.header);
-    transactions.forEach((transaction) => {
-      const { date, amount, total } = transaction;
-      const formattedDate = new Date(date).toLocaleDateString('en-GB');
-      return this.console.log(`${formattedDate} | ${amount} | ${total}`);
-    });
+    transactions.forEach(this.formatStatementLine.bind(this));
+  }
+
+  private formatStatementLine(transaction: Transaction) {
+    const { date, amount, total } = transaction;
+    const formattedDate = new Date(date).toLocaleDateString('en-GB');
+    this.console.log(`${formattedDate} | ${amount} | ${total}`);
   }
 }
