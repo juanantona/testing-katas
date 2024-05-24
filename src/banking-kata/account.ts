@@ -18,6 +18,6 @@ export class Account {
   }
 
   printStatement(): void {
-    this.statementPrinter.print(this.repository.allTransactions().reverse());
+    this.statementPrinter.print(this.repository.allTransactions());
   }
 }

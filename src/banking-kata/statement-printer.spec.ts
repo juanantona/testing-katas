@@ -19,6 +19,7 @@ describe('#StatementPrinter', () => {
 
   it('Should print the statement when one is provided to print method', async () => {
     const transactions = [transaction('2024-01-01', 1000, 2000)];
+
     statementPrinter.print(transactions);
 
     expect(logSpy).toHaveBeenCalledWith('01/01/2024 | 1000 | 2000');
@@ -29,6 +30,7 @@ describe('#StatementPrinter', () => {
       transaction('2024-01-01', 1000, 2000),
       transaction('2024-01-02', 500, 2500),
     ];
+
     statementPrinter.print(transactions);
 
     expect(logSpy).toHaveBeenCalledWith('01/01/2024 | 1000 | 2000');
