@@ -17,10 +17,15 @@ export class StatementPrinter {
 
   print(transactions: Transaction[]) {
     this.console.log(this.header);
+    this.printStatements(transactions);
+  }
+
+  private printStatements(transactions: Transaction[]) {
     transactions
       .sort(this.sortByDate)
-      .forEach((transaction) =>
-        this.console.log(this.formatStatementLine(transaction))
+      .map(this.formatStatementLine)
+      .forEach((formattedTransaction) =>
+        this.console.log(formattedTransaction)
       );
   }
 
