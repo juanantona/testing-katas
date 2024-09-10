@@ -1,0 +1,34 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch watch tests",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "test:watch"     
+      ],
+      "runtimeExecutable": "npm",
+      "type": "node"
+    },
+    {
+      "name": "Test this file",
+      "type": "node",
+      "request": "launch",
+      "program": "node_modules/.bin/jest",
+      "args": [
+        "${file}",
+        "--passWithNoTests",
+        "--watchAll",
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    },
+  ]
+}
